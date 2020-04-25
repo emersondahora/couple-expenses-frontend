@@ -7,6 +7,7 @@ import history from "~/service/history";
 import { signInSuccess, signFailure } from "./actions";
 import { loadCategoryRequest } from "../category/actions";
 import { loadPaymentFormRequest } from "../paymentform/actions";
+import { loadUserRequest } from "../user/actions";
 
 export function* signIn({ payload }) {
   try {
@@ -18,6 +19,7 @@ export function* signIn({ payload }) {
 
     api.defaults.headers.Authorization = `Bearer ${token}`;
     yield put(signInSuccess(token, user));
+    yield put(loadUserRequest());
     yield put(loadCategoryRequest());
     yield put(loadPaymentFormRequest());
     history.push("/");

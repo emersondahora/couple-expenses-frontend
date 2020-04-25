@@ -1,17 +1,16 @@
 import React, { useState, useRef } from "react";
 import { toast } from "react-toastify";
-import { Table, Button, Overlay, Popover } from "react-bootstrap";
+import { Table, Button, Overlay, Popover, ListGroup } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import { MdEdit, MdDelete } from "react-icons/md";
 import PropTypes from "prop-types";
 
 import api from "~/service/api";
 
-export default function PaymentList({ onEdit, onDelete }) {
-  const paymentforms = useSelector(state => state.paymentform.paymentforms);
-
+export default function CategoryList({ onEdit, onDelete }) {
+  const categories = useSelector(state => state.category.categories);
   const excludeElementInitalState = {
-    paymentItem: null,
+    categoryItem: null,
     target: null,
     show: false
   };
@@ -20,13 +19,13 @@ export default function PaymentList({ onEdit, onDelete }) {
   );
   const ref = useRef(null);
 
-  const handleClickExcludePayment = (event, paymentItem) => {
-    if (!paymentItem || paymentItem?.id === excludeElement.paymentItem?.id) {
+  const handleClickExcludeCategory = (event, categoryItem) => {
+    if (!categoryItem || categoryItem?.id === excludeElement.categoryItem?.id) {
       setExcludeElement(excludeElementInitalState);
     } else {
       setExcludeElement({
         ...excludeElementInitalState,
-        paymentItem,
+        categoryItem,
         target: event.target,
         show: true
       });
@@ -34,9 +33,9 @@ export default function PaymentList({ onEdit, onDelete }) {
   };
 
   const handleConfirmExcludePayment = async () => {
-    handleClickExcludePayment();
-    await api.delete(`/payment-forms/${excludeElement.paymentItem.id}`);
-    toast.success("Forma de pagamento apagada.");
+    handleClickExcludeCategory();
+    await api.delete(`/categories/${excludeElement.categoryItem.id}`);
+    toast.success("Categoria apagada.");
     onDelete();
   };
 
@@ -49,12 +48,12 @@ export default function PaymentList({ onEdit, onDelete }) {
         container={ref.current}
       >
         <Popover id="popover-contained">
-          <Popover.Title as="h3">Excluir forma de pagamento?</Popover.Title>
+          <Popover.Title as="h3">Exluir categoria?</Popover.Title>
           <Popover.Content>
             <Button
               variant="dark"
               className="mr-1"
-              onClick={() => handleClickExcludePayment()}
+              onClick={() => handleClickExcludeCategory()}
             >
               Cancelar
             </Button>
@@ -68,17 +67,26 @@ export default function PaymentList({ onEdit, onDelete }) {
         <thead>
           <tr>
             <th>Nome</th>
-            <th>Vencimento</th>
+            <th>Divisão</th>
             <th align="right" width={180}>
               Ações
             </th>
           </tr>
         </thead>
         <tbody>
-          {paymentforms.map(item => (
+          {categories.map(item => (
             <tr key={item.id}>
               <td>{item.name}</td>
-              <td>{item.expiration_day}</td>
+              <td>
+                <ListGroup>
+                  {item.division?.map(division => (
+                    <ListGroup.Item>
+                      {division.User.name} (<strong>{division.percent}%</strong>
+                      )
+                    </ListGroup.Item>
+                  ))}
+                </ListGroup>
+              </td>
               <td align="right">
                 <Button onClick={() => onEdit(item.id)} className="mr-1">
                   <MdEdit />
@@ -86,7 +94,7 @@ export default function PaymentList({ onEdit, onDelete }) {
 
                 <Button
                   variant="danger"
-                  onClick={event => handleClickExcludePayment(event, item)}
+                  onClick={event => handleClickExcludeCategory(event, item)}
                 >
                   <MdDelete />
                 </Button>
@@ -99,7 +107,7 @@ export default function PaymentList({ onEdit, onDelete }) {
   );
 }
 
-PaymentList.propTypes = {
+CategoryList.propTypes = {
   onEdit: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired
 };

@@ -27,7 +27,13 @@ export const getFormData = form => {
   const formData = new FormData(form);
   const object = {};
   formData.forEach(function(value, key) {
-    if (value) object[key] = value;
+    if (key.indexOf("[]") >= 0) {
+      const keyMult = key.replace("[]", "");
+      if (!object[keyMult]) object[keyMult] = [];
+      object[keyMult].push(value || null);
+    } else if (value) {
+      object[key] = value;
+    }
   });
   return object;
 };

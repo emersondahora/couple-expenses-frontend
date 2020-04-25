@@ -1,7 +1,8 @@
 import produce from "immer";
 
 const INICIAL_STATE = {
-  profile: null
+  profile: null,
+  users: []
 };
 
 export default function user(state = INICIAL_STATE, action) {
@@ -15,7 +16,13 @@ export default function user(state = INICIAL_STATE, action) {
         draft.profile = null;
         break;
       }
-
+      case "@user/LOAD_SUCESS": {
+        draft.users = action.payload.map(item => ({
+          ...item,
+          short_name: item.name.split(" ").shift()
+        }));
+        break;
+      }
       default:
     }
   });
