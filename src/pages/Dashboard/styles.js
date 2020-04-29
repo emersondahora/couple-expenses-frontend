@@ -34,3 +34,27 @@ export const Collapse = styled(BSCollapse)`
     margin: 0;
   }
 `;
+
+export const HeaderMonth = styled.div`
+  margin-bottom: 5px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-content: center;
+  color: #666;
+  button {
+    color: #666;
+    border: none;
+    background: none;
+    margin: 0px 5px;
+  }
+  button,
+  span {
+    line-height: 30px;
+    font-size: 16px;
+    padding: 5px 10px;
+  }
+  span {
+    font-size: 24px;
+  }
+`;

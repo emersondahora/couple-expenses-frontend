@@ -1,9 +1,9 @@
-export const findOrCreateArray = (array, finder, defaultItem, updater) => {
+export const ArrayMerge = (array, finder, insertItem, updaterCall) => {
   const itemFound = array.find(finder);
   if (itemFound) {
-    updater(itemFound);
+    if (updaterCall) updaterCall(itemFound);
   } else {
-    array.push(defaultItem);
+    array.push(insertItem);
   }
   return array;
 };
