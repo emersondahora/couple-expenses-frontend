@@ -1,21 +1,20 @@
-import React from "react";
+import React, { useState } from "react";
+import { useSelector } from "react-redux";
 import { MdKeyboardArrowDown, MdKeyboardArrowUp } from "react-icons/md";
 import { Button, Table, OverlayTrigger, Tooltip } from "react-bootstrap";
 import Proptypes from "prop-types";
 
-import { formatPrice } from "~/util/format";
 import { ExpensiveBlock, Collapse } from "../styles";
 
-export default function CategoryList({
-  owner_id,
-  ownerIndex,
-  categoryIndex,
-  category,
-  users,
-  handleToggleCategory
-}) {
+export default function CategoryList({ owner_id, category }) {
+  const users = useSelector(state => state.user.users);
+  const [openList, setopenList] = useState(true);
+  const openListToggle = () => {
+    setopenList(!openList);
+  };
+
   return (
-    <ExpensiveBlock key={String(category.category_id)}>
+    <ExpensiveBlock>
       <h1>
         {category.name}
         <div>
@@ -27,29 +26,26 @@ export default function CategoryList({
                 {users.map(user => (
                   <div key={user.short_name}>
                     {user.short_name} (
-                    {formatPrice(
+                    {
                       category.divisions.find(item => item.user_id === user.id)
-                        .amount
-                    )}
+                        .amountFormated
+                    }
                     )
                   </div>
                 ))}
               </Tooltip>
             }
           >
-            <span>{formatPrice(category.amount)}</span>
+            <span>{category.amountFormated}</span>
           </OverlayTrigger>
 
-          <Button
-            variant="link"
-            onClick={() => handleToggleCategory(ownerIndex, categoryIndex)}
-          >
-            {category.open ? <MdKeyboardArrowUp /> : <MdKeyboardArrowDown />}
+          <Button variant="link" onClick={() => openListToggle()}>
+            {openList ? <MdKeyboardArrowUp /> : <MdKeyboardArrowDown />}
           </Button>
         </div>
       </h1>
 
-      <Collapse in={category.open}>
+      <Collapse in={openList}>
         <div>
           <Table striped bordered hover>
             <thead>
@@ -81,17 +77,11 @@ export default function CategoryList({
                   <td className="text-center">
                     {expense.installment_current}/{expense.installment_total}
                   </td>
-                  <td>{formatPrice(expense.amount)}</td>
-                  {users
-                    .filter(item => item.id !== owner_id)
-                    .map(user => (
-                      <th key={user.short_name}>
-                        {formatPrice(
-                          expense.divisions.find(
-                            item => item.user_id === user.id
-                          ).amount
-                        )}
-                      </th>
+                  <td>{expense.amountFormated}</td>
+                  {expense.divisions
+                    .filter(item => item.user_id !== owner_id)
+                    .map(division => (
+                      <th key={division.user_id}>{division.amountFormated}</th>
                     ))}
                 </tr>
               ))}
@@ -105,9 +95,10 @@ export default function CategoryList({
 
 CategoryList.propTypes = {
   owner_id: Proptypes.number.isRequired,
-  ownerIndex: Proptypes.number.isRequired,
-  categoryIndex: Proptypes.number.isRequired,
-  category: Proptypes.objectOf().isRequired,
-  users: Proptypes.arrayOf().isRequired,
-  handleToggleCategory: Proptypes.func.isRequired
+  category: Proptypes.shape({
+    name: Proptypes.string,
+    amountFormated: Proptypes.string,
+    divisions: Proptypes.arrayOf(Proptypes.shape({})),
+    expenses: Proptypes.arrayOf(Proptypes.shape({}))
+  }).isRequired
 };

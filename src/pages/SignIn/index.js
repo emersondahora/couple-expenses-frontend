@@ -4,6 +4,7 @@ import { Form, Button } from "react-bootstrap";
 
 import { signInRequest, signFailure } from "~/store/modules/auth/actions";
 
+import logo from "~/assets/logo.svg";
 import { prepareSubmit } from "~/util/form";
 
 export default function SignIn() {
@@ -27,25 +28,24 @@ export default function SignIn() {
 
   return (
     <Form noValidate validated={validated} onSubmit={handleSubmit}>
+      <img src={logo} alt="Couple Expenses" />
       <Form.Group controlId="formBasicEmail">
-        <Form.Label>Email</Form.Label>
         <Form.Control
           name="email"
           required
           type="email"
-          placeholder="Enter email"
+          placeholder="Usuário"
         />
         <Form.Control.Feedback type="invalid">
           Por favor, informe um e-mail válido
         </Form.Control.Feedback>
       </Form.Group>
       <Form.Group controlId="formBasicPassword">
-        <Form.Label>Senha</Form.Label>
         <Form.Control
           required
           name="password"
           type="password"
-          placeholder="Password"
+          placeholder="Senha"
         />
         <Form.Control.Feedback type="invalid">
           Por favor, informe a senha
@@ -53,7 +53,7 @@ export default function SignIn() {
       </Form.Group>
 
       <Button variant="primary" type="submit" disabled={loading}>
-        {loading ? "Carregando..." : "Entrar no sistema"}
+        {loading ? "Carregando..." : "Login"}
       </Button>
     </Form>
   );

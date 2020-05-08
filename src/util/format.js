@@ -6,12 +6,25 @@ export const { format: formatPrice } = new Intl.NumberFormat("pt-BR", {
   currency: "BRL"
 });
 
-export const capitalizeFirstLetter = string =>
-  string.charAt(0).toUpperCase() + string.slice(1);
+export const { format: formatNumber } = new Intl.NumberFormat("pt-BR", {
+  maximumFractionDigits: 2
+});
+
+export const capitalizeFirstLetter = string => {
+  try {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  } catch (error) {
+    return "";
+  }
+};
 
 export const dateFormat = (date, format_type = "dd/MM/yyyy") => {
-  const date_ = typeof date === "string" ? parseISO(date) : date;
-  return format(date_, format_type, { locale: pt });
+  try {
+    const date_ = typeof date === "string" ? parseISO(date) : date;
+    return format(date_, format_type, { locale: pt });
+  } catch (error) {
+    return null;
+  }
 };
 
 export const monthList = () => {

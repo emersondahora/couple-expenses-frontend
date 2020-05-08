@@ -5,6 +5,7 @@ export const Container = styled.div`
   min-width: 800px;
   margin: 0 auto;
   padding: 30px 20px;
+  position: relative;
 
   h1 {
     display: flex;

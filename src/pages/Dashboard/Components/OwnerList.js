@@ -1,21 +1,20 @@
-import React from "react";
+import React, { useState } from "react";
+import { useSelector } from "react-redux";
 import { MdKeyboardArrowDown, MdKeyboardArrowUp } from "react-icons/md";
 import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
 import Proptypes from "prop-types";
 
-import { formatPrice } from "~/util/format";
 import { ExpensiveBlock, Collapse } from "../styles";
 import CategoryList from "./CategoryList";
 
-export default function OwnerList({
-  ownerIndex,
-  owner,
-  users,
-  handleToggleOwner,
-  handleToggleCategory
-}) {
+export default function OwnerList({ owner }) {
+  const users = useSelector(state => state.user.users);
+  const [openList, setopenList] = useState(true);
+  const openListToggle = () => {
+    setopenList(!openList);
+  };
   return (
-    <ExpensiveBlock display_color={owner.display_color} key={owner.user_id}>
+    <ExpensiveBlock display_color={owner.display_color}>
       <h1 variant="dark">
         <span>{owner.name}</span>
         <div>
@@ -24,39 +23,34 @@ export default function OwnerList({
             delay={{ show: 250, hide: 400 }}
             overlay={
               <Tooltip id="button-tooltip">
-                {users
-                  .filter(item => item.id !== owner.user_ids)
-                  .map(user => (
-                    <div key={user.short_name}>
-                      {user.short_name} (
-                      {formatPrice(
-                        owner.divisions.find(item => item.user_id === user.id)
-                          .amount
-                      )}
-                      )
-                    </div>
-                  ))}
+                {users.map(user => (
+                  <div key={user.short_name}>
+                    {user.short_name} (
+                    {
+                      owner.divisions.find(item => item.user_id === user.id)
+                        .amountFormated
+                    }
+                    )
+                  </div>
+                ))}
               </Tooltip>
             }
           >
-            <span>{formatPrice(owner.amount)}</span>
+            <span>{owner.amountFormated}</span>
           </OverlayTrigger>
-          <Button variant="link" onClick={() => handleToggleOwner(ownerIndex)}>
-            {owner.open ? <MdKeyboardArrowUp /> : <MdKeyboardArrowDown />}
+          <Button variant="link" onClick={() => openListToggle()}>
+            {openList ? <MdKeyboardArrowUp /> : <MdKeyboardArrowDown />}
           </Button>
         </div>
       </h1>
-      <Collapse in={owner.open}>
+      <Collapse in={openList}>
         <div>
-          {owner.categories.map((category, categoryIndex) => (
+          {owner.categories.map(category => (
             <CategoryList
               category={category}
-              key={owner.id}
-              ownerIndex={ownerIndex}
-              categoryIndex={categoryIndex}
+              key={category.category_id}
               owner_id={owner.user_id}
               users={users}
-              handleToggleCategory={handleToggleCategory}
             />
           ))}
         </div>
@@ -66,9 +60,12 @@ export default function OwnerList({
 }
 
 OwnerList.propTypes = {
-  ownerIndex: Proptypes.number.isRequired,
-  owner: Proptypes.objectOf().isRequired,
-  users: Proptypes.arrayOf().isRequired,
-  handleToggleOwner: Proptypes.func.isRequired,
-  handleToggleCategory: Proptypes.func.isRequired
+  owner: Proptypes.shape({
+    user_id: Proptypes.number,
+    name: Proptypes.string,
+    display_color: Proptypes.string,
+    amountFormated: Proptypes.string,
+    categories: Proptypes.arrayOf(Proptypes.shape({})),
+    divisions: Proptypes.arrayOf(Proptypes.shape({}))
+  }).isRequired
 };

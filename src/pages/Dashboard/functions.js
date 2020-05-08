@@ -1,11 +1,15 @@
 import { ArrayMerge } from "~/util/general";
 
-import { formatPrice, dateFormat } from "~/util/format";
+import { formatPrice, dateFormat, formatNumber } from "~/util/format";
 
 export function processExpenses(expenses) {
   const formatExpenses = expense => {
     expense.amountFormated = formatPrice(expense.amount);
     expense.date = dateFormat(expense.expense_date);
+    expense.divisions = expense.divisions.map(division => ({
+      ...division,
+      amountFormated: formatPrice(division.amount)
+    }));
     return expense;
   };
 
@@ -17,7 +21,6 @@ export function processExpenses(expenses) {
         user_id: expense.user_id,
         name: expense.user.name,
         display_color: expense.user.display_color,
-        open: true,
         expenses: [expense]
       },
       owner => {
@@ -63,7 +66,6 @@ export function processExpenses(expenses) {
         {
           category_id: expense.category_id,
           name: expense.category.name,
-          open: true,
           expenses: [expense]
         },
         category => {
@@ -98,6 +100,13 @@ export const summarizeExpenses = groupedExpenses => {
         (deficit, user) =>
           owner.user_id !== user.user_id ? deficit + user.amount : deficit,
         0
+      ),
+      deficitFormated: formatPrice(
+        owner.divisions.reduce(
+          (deficit, user) =>
+            owner.user_id !== user.user_id ? deficit + user.amount : deficit,
+          0
+        )
       )
     })),
     categories: groupedExpenses.reduce((draft, owner) => {
@@ -132,6 +141,13 @@ export const summarizeExpenses = groupedExpenses => {
       return draft;
     }, [])
   };
+  summirazed.categories = summirazed.categories.map(category => {
+    const percent = formatNumber((category.amount / summirazed.amount) * 100);
+    return {
+      ...category,
+      percent
+    };
+  });
   summirazed.amountFormated = formatPrice(summirazed.amount);
   // calculating who owes who
   summirazed.deficitResult = summirazed.owners.reduce(

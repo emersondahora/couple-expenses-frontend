@@ -1,7 +1,17 @@
-import { createGlobalStyle } from "styled-components";
+import { createGlobalStyle, keyframes } from "styled-components";
 
 import "react-toastify/dist/ReactToastify.css";
 import "bootstrap/dist/css/bootstrap.min.css";
+import "react-datepicker/dist/react-datepicker.css";
+
+const rotate = keyframes`
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+`;
 
 export default createGlobalStyle`
     @import url('https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap');
@@ -38,5 +48,11 @@ export default createGlobalStyle`
 
     button {
         cursor: pointer;
+    }
+    .react-datepicker-wrapper {
+        display:block;
+    }
+    .rotate {
+        animation: ${rotate} 2s linear infinite;
     }
 `;

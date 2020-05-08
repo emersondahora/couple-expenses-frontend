@@ -1,22 +1,24 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { Navbar, Nav, Button } from "react-bootstrap";
+import { Nav, Button } from "react-bootstrap";
 
 import { signOut } from "~/store/modules/auth/actions";
+
+import { Navbar } from "./styles";
+
+import logo from "~/assets/logo-header.svg";
 
 export default function Header() {
   const dispatch = useDispatch();
   const user = useSelector(state => state.user.profile);
-  const categories = useSelector(state => state.category.categories);
-  const paymentforms = useSelector(state => state.paymentform.paymentforms);
   function handleSignOut() {
     dispatch(signOut());
   }
   return (
-    <Navbar variant="dark" bg="dark" expand="lg">
+    <Navbar variant="dark" bg="dark" expand="md">
       <Navbar.Brand as={Link} to="/">
-        Couple expenses
+        <img src={logo} className="logo" alt="Couple Expenses" />
       </Navbar.Brand>
       <Nav>
         <Nav.Item>
@@ -25,18 +27,13 @@ export default function Header() {
           </Nav.Link>
         </Nav.Item>
         <Nav.Item>
-          <Nav.Link as={Link} to="/expenses">
-            Histórico de compras
-          </Nav.Link>
-        </Nav.Item>
-        <Nav.Item>
           <Nav.Link as={Link} to="/categories">
-            Categorias ({categories.length})
+            Categorias
           </Nav.Link>
         </Nav.Item>
         <Nav.Item>
           <Nav.Link as={Link} to="/paymant-forms">
-            Formas de Pagamento ({paymentforms.length})
+            Formas de Pagamento
           </Nav.Link>
         </Nav.Item>
       </Nav>
